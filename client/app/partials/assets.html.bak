@@ -1,0 +1,36 @@
+<div ng-controller="BookListCtrl">
+    <h1 class="page-header">Book List</h1>
+    <table class="table">
+        <thead>
+            <tr>
+                <th width="25px">ID</th>
+                <th>UNIQUE NAME</th>
+                <th>PRICE</th>
+                <th>ASSET TYPE</th>
+                <th width="50px"></th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr ng-repeat="e in assets">
+                <td>{{e.id}}</td>
+                <td>{{e.uniqueName}}</td>
+                <td>{{e.price|currency}}</td>
+                <td>{{e.typeOfAsset}}</td>
+                <!-- ng-show="user.id &&user.id==e.user_id" -->
+                <td><a ng-click="editAsset($index)" ><i
+                            class="icon-pencil"></i>
+                    </a>
+                    &nbsp;
+                    <a ng-click="delAsset($index)" ><i
+                            class="icon-remove-circle"></i></a></td>
+            </tr>
+        </tbody>
+    </table>
+<!-- ng-show="user.username" -->
+    <p>
+        <button type="button" class="btn btn-success" 
+                ng-click="addAsset()">
+            <b class="icon-plus-sign"></b>Add Asset
+        </button>
+    </p>
+</div>

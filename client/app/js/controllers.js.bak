@@ -1,0 +1,106 @@
+(function() {
+    var as = angular.module('myApp.controllers', []);
+    as.controller('AppCtrl',['$scope', '$rootScope', '$http', 'i18n', '$location', 'apiUrl', function($scope, $rootScope, $http, i18n, $location, apiUrl) {
+        $scope.language = function() {
+            return i18n.language;
+        };
+        $scope.setLanguage = function(lang) {
+            i18n.setLanguage(lang);
+        };
+        $scope.activeWhen = function(value) {
+            return value ? 'active' : '';
+        };
+
+        $scope.path = function() {
+            return $location.url();
+        };
+
+        $scope.login = function() {
+            $scope.$emit('event:loginRequest', $scope.username, $scope.password);
+        };
+
+        $scope.logout = function() {
+            $rootScope.user = null;
+            $scope.username = $scope.password = null;
+            $scope.$emit('event:logoutRequest');
+        };
+
+
+    }]);
+
+    as.controller('AssetListCtrl', ['$scope', '$rootScope', '$http', '$location', 'apiUrl', function($scope, $rootScope, $http, $location, apiUrl) {
+        var load = function() {
+            console.log('call load()...');
+            $http.get(apiUrl + '/assets.json')
+                    .success(function(data, status, headers, config) {
+                        $scope.assets = data;
+                        angular.copy($scope.assets, $scope.copy);
+                    });
+        }
+
+        load();
+
+        $scope.addAsset = function() {
+            console.log('call addAsset');
+            $location.path("/new");
+        }
+
+        $scope.editAsset = function(index) {
+            console.log('call editAsset');
+            $location.path('/edit/' + $scope.assets[index].id);
+        }
+
+        $scope.delAsset = function(index) {
+            console.log('call delAsset');
+            var todel = $scope.books[index];
+            $http
+                    .delete(apiUrl + '/assets/' + todel.id + '.json')
+                    .success(function(data, status, headers, config) {
+                        load();
+                    }).error(function(data, status, headers, config) {
+            });
+        }
+
+    }]);
+
+    as.controller('NewAssetCtrl', ['$scope', '$rootScope', '$http', '$location', 'apiUrl', function($scope, $rootScope, $http, $location, apiUrl) {
+
+        $scope.asset = {};
+
+        $scope.saveAsset = function() {
+            console.log('call saveAsset');
+            $http
+                    .post(apiUrl + '/assets.json', $scope.asset)
+                    .success(function(data, status, headers, config) {
+                        $location.path('/assets');
+                    }).error(function(data, status, headers, config) {
+            });
+        }
+    }]);
+
+    as.controller('EditAssetCtrl', ['$scope', '$rootScope', '$http', '$routeParams', '$location', 'apiUrl', function($scope, $rootScope, $http, $routeParams, $location, apiUrl) {
+
+        var load = function() {
+            console.log('call load()...');
+            $http.get(apiUrl + '/assets/' + $routeParams['id'] + '.json')
+                    .success(function(data, status, headers, config) {
+                        $scope.asset = data;
+                        angular.copy($scope.asset, $scope.copy);
+                    });
+        }
+
+        load();
+
+        $scope.asset = {};
+
+        $scope.updateAsset = function() {
+            console.log('call updateAsset');
+            $http
+                    .put(apiUrl + '/assets/' + $scope.asset.id + '.json',  $scope.asset)
+                    .success(function(data, status, headers, config) {
+                        $location.path('/assets');
+                    }).error(function(data, status, headers, config) {
+            });
+        }
+    }]);
+}());
